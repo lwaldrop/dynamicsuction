@@ -1,3 +1,5 @@
+Test case, will not work.
+
 L = 1;                              % length of computational domain (m)
 N = 512;                            % number of Cartesian grid meshwidths at the finest level of the AMR grid
 dx = L/N;                           % Cartesian mesh width (m)
@@ -8,19 +10,17 @@ ds = L/(2*N);                       % space between boundary points in straight 
 %Parameters for the racetrack
 
 Let = 0.4;                          % Length of elastic tube (m)
-Nend = 10;                          % Number of rigid points on each end of elastic section
+Nend = 10;                           % Number of rigid points on each end of elastic section
 Lt = Let+2*Nend*ds;                 % Length of straight section with three rigid points on each end
-Llong = 0.10;                        % Lenght of long end of the tube
 
 diameter = 0.1;                     % diameter of the tube
 R2 = 0.1;                           % radius of inner wall
 R1 = R2+diameter;                   % radius of outer wall
 
 Nstraight = 2*ceil(Lt/ds);          % number of points along each straight section
-%Ncurve = 2*ceil(pi*R1/ds);          % number of points along each curved section
-Nrace = 4*ceil(Llong/ds);         % number of points making up the racetrack part
-%Nrace = Nstraight+2*Ncurve;         % number of points making up the racetrack part
-%dtheta = pi/(Ncurve/2);             % angle increment for drawing curved edges
+Ncurve = 2*ceil(pi*R1/ds);          % number of points along each curved section
+Nrace = Nstraight+2*Ncurve;         % number of points making up the racetrack part
+dtheta = pi/(Ncurve/2);             % angle increment for drawing curved edges
 
 mesh_name = 'heart_';               % structure name
 
@@ -53,12 +53,6 @@ kappa_beam = 5.0e-1;                 % beam stiffness constant (Newton m^2)
 kappa_target = kappa_spring;        % target point penalty spring constant (Newton)
 
 
-%%%%%%%%%%%%%
-% Plotting things 
-
-figure(1)
-hold on
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Make the elastic section of the tube
@@ -71,7 +65,6 @@ fprintf(vertex_fid, '%d\n', Nstraight);
 for i=1:ceil(Nstraight/2),
     ytop = centery-R2;
     xtop = -Lt/2+(i-1)*ds;
-    plot(xtop,ytop,'r-+')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
@@ -79,7 +72,6 @@ end
 for i=ceil(Nstraight/2)+1:Nstraight,
     ybot = centery-R1;
     xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
-    plot(xbot,ybot,'r-+')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
 fclose(vertex_fid);
@@ -96,7 +88,6 @@ fprintf(vertex_fid, '%d\n', NLa);
 for i=Na1:Na2,
     ytop = centery-R2;
     xtop = -Lt/2+i*ds;
-    plot(xtop,ytop,'k*')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 fclose(vertex_fid);
@@ -108,48 +99,59 @@ fprintf(vertex_fid, '%d\n', NLa);
 for i=Na1:Na2,
     ybot = centery-R1;
     xbot = -Lt/2+i*ds;
-    plot(xbot,ybot,'k*')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
 fclose(vertex_fid);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% NO race track part
+% race track part
 % Write out the vertex information
 
-vertex_fid = fopen([mesh_name 'norace_' num2str(N) '.vertex'], 'w');
+vertex_fid = fopen([mesh_name 'race_' num2str(N) '.vertex'], 'w');
 fprintf(vertex_fid, '%d\n', Nrace);
 
-%right curved part of NO racetrack
-for i=1:ceil(Nrace/4),
-    ytop = centery-R2;
-    xtop = Lt/2+i*ds;
-    plot(xtop,ytop,'b-')
-    fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+%right curved part of racetrack
+for i=1:ceil(Ncurve/2),
+    theta = (i-1)*dtheta-pi/2;
+    yin = centery+R2*sin(theta);
+    xin = Lt/2+R2*cos(theta);
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xin, yin);
 end
 
-for i=1:ceil(Nrace/4),
-    ybot = centery-R1;
-    xbot = Lt/2+i*ds;
-    plot(xbot,ybot,'b-')
-    fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+for i=ceil(Ncurve/2)+1:Ncurve,
+    theta=(i-Ncurve/2-1)*dtheta-pi/2;
+    yout = centery+R1*sin(theta);
+    xout = Lt/2+R1*cos(theta);
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xout, yout);
 end
 
-
-%left curved part of NO racetrack
-for i=1:ceil(Nrace/4),
-    ytop = centery-R2;
-    xtop = -Lt/2-i*ds;
-    plot(xtop,ytop,'b-')
-    fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+%straight section on the top
+for i = Ncurve+1:Ncurve+ceil(Nstraight/2),
+    yin = centery+R2;
+    xin = centerx2-(i-Ncurve-1)*ds;
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xin, yin);
 end
 
-for i=1:ceil(Nrace/4),
-    ybot = centery-R1;
-    xbot = -Lt/2-i*ds;
-    plot(xbot,ybot,'b-')
-    fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+for i = Ncurve+ceil(Nstraight/2)+1:Ncurve+Nstraight,
+    yout = centery+R1;
+    xout = centerx2-(i-Ncurve-ceil(Nstraight/2)-1)*ds;
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xout, yout);
+end
+
+%left curved part of racetrack
+for i = Ncurve+Nstraight+1:Ncurve+Nstraight+ceil(Ncurve/2),
+    theta = pi/2+(i-Ncurve-Nstraight-1)*dtheta;
+    yin = centery+R2*sin(theta);
+    xin = centerx1+R2*cos(theta);
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xin, yin);
+end
+
+for i = Ncurve+Nstraight+ceil(Ncurve/2)+1:2*Ncurve+Nstraight,
+    theta = pi/2+(i-Ncurve-Nstraight-ceil(Ncurve/2)-1)*dtheta;
+    yout = centery+R1*sin(theta);
+    xout = centerx1+R1*cos(theta);
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xout, yout);
 end
 fclose(vertex_fid);
 
@@ -157,51 +159,48 @@ fclose(vertex_fid);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Pericardium
 % Write out the vertex information
-% 
-% vertex_fid = fopen([mesh_name 'peri_' num2str(N) '.vertex'], 'w');
-% fprintf(vertex_fid, '%d\n', Nperitot);
-% 
-% % make the top and bottom of the pericardium
-% for i=1:ceil(Nstraight/2),
-%     ytop = centery-(R2-(Dp-diameter)/2);
-%     xtop = -Lt/2+(i-1)*ds;
-%     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
-% end
-% 
-% for i=ceil(Nstraight/2)+1:Nstraight,
-%     ybot = centery-R1-(Dp-diameter)/2;
-%     xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
-%     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
-% end
-% 
-% % make the four side pieces
-% for i=Nstraight+1:Nstraight+ceil(Nperi/4),
-%     y = centery-(R1+(Dp-diameter)/2)+(i-Nstraight-1)*ds;
-%     x = -Lt/2;
-%     fprintf(vertex_fid, '%1.16e %1.16e\n', x, y);
-% end
-% 
-% for i=Nstraight+ceil(Nperi/4)+1:Nstraight+ceil(Nperi/2),
-%     y = centery-R2+(i-Nstraight-ceil(Nperi/4)-1)*ds;
-%     x = -Lt/2;
-%     fprintf(vertex_fid, '%1.16e %1.16e\n', x, y);
-% end
-% 
-% for i=Nstraight+ceil(Nperi/2)+1:Nstraight+ceil(3*Nperi/4),
-%     y = centery-(R1+(Dp-diameter)/2)+(i-Nstraight-ceil(Nperi/2)-1)*ds;
-%     x = Lt/2;
-%     fprintf(vertex_fid, '%1.16e %1.16e\n', x, y);
-% end
-% 
-% for i=Nstraight+ceil(3*Nperi/4)+1:Nperitot,
-%     y = centery-R2+(i-Nstraight-ceil(3*Nperi/4)-1)*ds;
-%     x = Lt/2;
-%     fprintf(vertex_fid, '%1.16e %1.16e\n', x, y);
-% end
-% fclose(vertex_fid);
 
+vertex_fid = fopen([mesh_name 'peri_' num2str(N) '.vertex'], 'w');
+fprintf(vertex_fid, '%d\n', Nperitot);
 
-hold off
+% make the top and bottom of the pericardium
+for i=1:ceil(Nstraight/2),
+    ytop = centery-(R2-(Dp-diameter)/2);
+    xtop = -Lt/2+(i-1)*ds;
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+end
+
+for i=ceil(Nstraight/2)+1:Nstraight,
+    ybot = centery-R1-(Dp-diameter)/2;
+    xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+end
+
+% make the four side pieces
+for i=Nstraight+1:Nstraight+ceil(Nperi/4),
+    y = centery-(R1+(Dp-diameter)/2)+(i-Nstraight-1)*ds;
+    x = -Lt/2;
+    fprintf(vertex_fid, '%1.16e %1.16e\n', x, y);
+end
+
+for i=Nstraight+ceil(Nperi/4)+1:Nstraight+ceil(Nperi/2),
+    y = centery-R2+(i-Nstraight-ceil(Nperi/4)-1)*ds;
+    x = -Lt/2;
+    fprintf(vertex_fid, '%1.16e %1.16e\n', x, y);
+end
+
+for i=Nstraight+ceil(Nperi/2)+1:Nstraight+ceil(3*Nperi/4),
+    y = centery-(R1+(Dp-diameter)/2)+(i-Nstraight-ceil(Nperi/2)-1)*ds;
+    x = Lt/2;
+    fprintf(vertex_fid, '%1.16e %1.16e\n', x, y);
+end
+
+for i=Nstraight+ceil(3*Nperi/4)+1:Nperitot,
+    y = centery-R2+(i-Nstraight-ceil(3*Nperi/4)-1)*ds;
+    x = Lt/2;
+    fprintf(vertex_fid, '%1.16e %1.16e\n', x, y);
+end
+fclose(vertex_fid);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -290,7 +289,7 @@ fclose(target_fid);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Write out the target point information for the racetrack
-target_fid = fopen([mesh_name 'norace_' num2str(N) '.target'], 'w');
+target_fid = fopen([mesh_name 'race_' num2str(N) '.target'], 'w');
 
 fprintf(target_fid, '%d\n', Nrace);
 
@@ -302,14 +301,14 @@ fclose(target_fid);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Write out the target point information for the pericardium
-% target_fid = fopen([mesh_name 'peri_' num2str(N) '.target'], 'w');
-% 
-% fprintf(target_fid, '%d\n', Nperitot);
-% 
-% for i = 0:Nperitot-1,
-%     fprintf(target_fid, '%d %1.16e\n', i, kappa_target*ds/(ds^2));
-% end
-% 
-% fclose(target_fid);
+target_fid = fopen([mesh_name 'peri_' num2str(N) '.target'], 'w');
+
+fprintf(target_fid, '%d\n', Nperitot);
+
+for i = 0:Nperitot-1,
+    fprintf(target_fid, '%d %1.16e\n', i, kappa_target*ds/(ds^2));
+end
+
+fclose(target_fid);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
