@@ -20,7 +20,7 @@ Nstraight = 2*ceil(Lt/ds);          % number of points along each straight secti
 %Ncurve = 2*ceil(pi*R1/ds);          % number of points along each curved section
 Nrace = 4*ceil(Llong/ds);         % number of points making up the racetrack part
 %Nrace = Nstraight+2*Ncurve;         % number of points making up the racetrack part
-theta = 0.15;
+theta = 0.30;
 %dtheta = pi/(Ncurve/2);             % angle increment for drawing curved edges
 
 mesh_name = 'heart_';               % structure name
@@ -73,6 +73,7 @@ for i=1:ceil(Nstraight/2),
     ytop = centery-R2;
     xtop = -Lt/2+(i-1)*ds;
     plot(xtop,ytop,'r-+')
+    axis([-0.5 0.5 -0.5 0.5])
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
@@ -153,6 +154,22 @@ for i=1:ceil(Nrace/4),
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
 
+%right part of inner branched section
+for i=1:ceil(Nrace/4),
+    ytop = centery-R2-0.5*diameter+i*ds*sin(theta);
+    xtop = Lt/2+Llong+i*ds;
+    plot(xtop,ytop,'b-')
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+end
+
+for i=1:ceil(Nrace/4),
+    ybot = centery-R2-0.5*diameter-i*ds*sin(theta);
+    xbot = Lt/2+Llong+i*ds;
+    plot(xbot,ybot,'b-')
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+end
+
+
 %left part of straight section
 for i=1:ceil(Nrace/4),
     ytop = centery-R2;
@@ -163,12 +180,12 @@ end
 
 for i=1:ceil(Nrace/4),
     ybot = centery-R1;
-    xbot = -Lt/2-Llong-i*ds;
+    xbot = -Lt/2-i*ds;
     plot(xbot,ybot,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
 
-%left part of branched section
+%left part of outer branched section
 for i=1:ceil(Nrace/4),
     ytop = centery-R2+i*ds*sin(theta);
     xtop = -Lt/2-Llong-i*ds;
@@ -177,11 +194,28 @@ for i=1:ceil(Nrace/4),
 end
 
 for i=1:ceil(Nrace/4),
-    ybot = centery-R1;
-    xbot = -Lt/2-i*ds;
+    ybot = centery-R1-i*ds*sin(theta);
+    xbot = -Lt/2-Llong-i*ds;
     plot(xbot,ybot,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
+
+%left part of inner branched section
+for i=1:ceil(Nrace/4),
+    ytop = centery-R2-0.5*diameter+i*ds*sin(theta);
+    xtop = -Lt/2-Llong-i*ds;
+    plot(xtop,ytop,'b-')
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+end
+
+for i=1:ceil(Nrace/4),
+    ybot = centery-R2-0.5*diameter-i*ds*sin(theta);
+    xbot = -Lt/2-Llong-i*ds;
+    plot(xbot,ybot,'b-')
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+end
+
+
 
 fclose(vertex_fid);
 
