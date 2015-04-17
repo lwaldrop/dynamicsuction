@@ -137,7 +137,7 @@ for i=1:ceil(Nrace/4),
 end
 
 
-%left curved part of NO racetrack
+%left curved part of MO racetrack
 for i=1:ceil(Nrace/4),
     ytop = centery-R2;
     xtop = -Lt/2-i*ds;
