@@ -91,7 +91,7 @@ IBMethod {                //
                 //
 IBStandardInitializer {                //
    max_levels = MAX_LEVELS                //
-   structure_names = "actuator_top_512", "actuator_bot_512", "heart_tube_512", "markers_512"             //   
+   structure_names = "actuator_top_512", "actuator_bot_512", "heart_tube_512", "heart_norace_512", "markers_512"             //   
    actuator_top_512 {                //
       level_number = MAX_LEVELS - 1                //
    } //
@@ -100,6 +100,9 @@ IBStandardInitializer {                //
    } //
    heart_tube_512 {                //
       level_number = MAX_LEVELS - 1                //
+   } //
+   heart_norace_512 {				//
+      level_number = MAX_LEVELS - 1		//
    } //
    markers_512 {                //
       level_number = MAX_LEVELS - 1                //
