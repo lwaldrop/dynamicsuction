@@ -18,7 +18,7 @@ R1 = R2+diameter;                   % radius of outer wall
 
 Nstraight = 2*ceil(Lt/ds);          % number of points along each straight section
 %Ncurve = 2*ceil(pi*R1/ds);          % number of points along each curved section
-Nrace = 4*ceil(Llong/ds);         % number of points making up the racetrack part
+Nrace = 12*ceil(Llong/ds);         % number of points making up the racetrack part
 %Nrace = Nstraight+2*Ncurve;         % number of points making up the racetrack part
 theta = 0.30;
 %dtheta = pi/(Ncurve/2);             % angle increment for drawing curved edges
@@ -124,14 +124,14 @@ vertex_fid = fopen([mesh_name 'norace_' num2str(N) '.vertex'], 'w');
 fprintf(vertex_fid, '%d\n', Nrace);
 
 %right part of straight section
-for i=1:ceil(Nrace/4),
+for i=1:ceil(Nrace/12),
     ytop = centery-R2;
     xtop = Lt/2+i*ds;
     plot(xtop,ytop,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-for i=1:ceil(Nrace/4),
+for i=1:ceil(Nrace/12),
     ybot = centery-R1;
     xbot = Lt/2+i*ds;
     plot(xbot,ybot,'b-')
@@ -140,14 +140,14 @@ end
 
 %right part of branched section
 
-for i=1:ceil(Nrace/4),
+for i=1:ceil(Nrace/12),
     ytop = centery-R2+i*ds*sin(theta);
     xtop = Lt/2+Llong+i*ds;
     plot(xtop,ytop,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-for i=1:ceil(Nrace/4),
+for i=1:ceil(Nrace/12),
     ybot = centery-R1-i*ds*sin(theta);
     xbot = Lt/2+Llong+i*ds;
     plot(xbot,ybot,'b-')
@@ -155,14 +155,14 @@ for i=1:ceil(Nrace/4),
 end
 
 %right part of inner branched section
-for i=1:ceil(Nrace/4),
+for i=1:ceil(Nrace/12),
     ytop = centery-R2-0.5*diameter+i*ds*sin(theta);
     xtop = Lt/2+Llong+i*ds;
     plot(xtop,ytop,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-for i=1:ceil(Nrace/4),
+for i=1:ceil(Nrace/12),
     ybot = centery-R2-0.5*diameter-i*ds*sin(theta);
     xbot = Lt/2+Llong+i*ds;
     plot(xbot,ybot,'b-')
@@ -171,14 +171,14 @@ end
 
 
 %left part of straight section
-for i=1:ceil(Nrace/4),
+for i=1:ceil(Nrace/12),
     ytop = centery-R2;
     xtop = -Lt/2-i*ds;
     plot(xtop,ytop,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-for i=1:ceil(Nrace/4),
+for i=1:ceil(Nrace/12),
     ybot = centery-R1;
     xbot = -Lt/2-i*ds;
     plot(xbot,ybot,'b-')
@@ -186,14 +186,14 @@ for i=1:ceil(Nrace/4),
 end
 
 %left part of outer branched section
-for i=1:ceil(Nrace/4),
+for i=1:ceil(Nrace/12),
     ytop = centery-R2+i*ds*sin(theta);
     xtop = -Lt/2-Llong-i*ds;
     plot(xtop,ytop,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-for i=1:ceil(Nrace/4),
+for i=1:ceil(Nrace/12),
     ybot = centery-R1-i*ds*sin(theta);
     xbot = -Lt/2-Llong-i*ds;
     plot(xbot,ybot,'b-')
@@ -201,14 +201,14 @@ for i=1:ceil(Nrace/4),
 end
 
 %left part of inner branched section
-for i=1:ceil(Nrace/4),
+for i=1:ceil(Nrace/12),
     ytop = centery-R2-0.5*diameter+i*ds*sin(theta);
     xtop = -Lt/2-Llong-i*ds;
     plot(xtop,ytop,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-for i=1:ceil(Nrace/4),
+for i=1:ceil(Nrace/12),
     ybot = centery-R2-0.5*diameter-i*ds*sin(theta);
     xbot = -Lt/2-Llong-i*ds;
     plot(xbot,ybot,'b-')
