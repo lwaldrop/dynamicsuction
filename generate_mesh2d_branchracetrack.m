@@ -20,6 +20,7 @@ Nstraight = 2*ceil(Lt/ds);          % number of points along each straight secti
 %Ncurve = 2*ceil(pi*R1/ds);          % number of points along each curved section
 Nrace = 4*ceil(Llong/ds);         % number of points making up the racetrack part
 %Nrace = Nstraight+2*Ncurve;         % number of points making up the racetrack part
+theta = 0.15;
 %dtheta = pi/(Ncurve/2);             % angle increment for drawing curved edges
 
 mesh_name = 'heart_';               % structure name
@@ -121,7 +122,7 @@ fclose(vertex_fid);
 vertex_fid = fopen([mesh_name 'norace_' num2str(N) '.vertex'], 'w');
 fprintf(vertex_fid, '%d\n', Nrace);
 
-%right curved part of NO racetrack
+%right part of straight section
 for i=1:ceil(Nrace/4),
     ytop = centery-R2;
     xtop = Lt/2+i*ds;
@@ -136,11 +137,41 @@ for i=1:ceil(Nrace/4),
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
 
+%right part of branched section
 
-%left curved part of MO racetrack
+for i=1:ceil(Nrace/4),
+    ytop = centery-R2+i*ds*sin(theta);
+    xtop = Lt/2+Llong+i*ds;
+    plot(xtop,ytop,'b-')
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+end
+
+for i=1:ceil(Nrace/4),
+    ybot = centery-R1-i*ds*sin(theta);
+    xbot = Lt/2+Llong+i*ds;
+    plot(xbot,ybot,'b-')
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+end
+
+%left part of straight section
 for i=1:ceil(Nrace/4),
     ytop = centery-R2;
     xtop = -Lt/2-i*ds;
+    plot(xtop,ytop,'b-')
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+end
+
+for i=1:ceil(Nrace/4),
+    ybot = centery-R1;
+    xbot = -Lt/2-Llong-i*ds;
+    plot(xbot,ybot,'b-')
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+end
+
+%left part of branched section
+for i=1:ceil(Nrace/4),
+    ytop = centery-R2+i*ds*sin(theta);
+    xtop = -Lt/2-Llong-i*ds;
     plot(xtop,ytop,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
@@ -151,6 +182,7 @@ for i=1:ceil(Nrace/4),
     plot(xbot,ybot,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
+
 fclose(vertex_fid);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
