@@ -1,75 +1,101 @@
 # Clears any previous data
 rm(list=ls())
 
+project<-c("dynamic_suction")
+morph<- "branched"
+
+Wo<-c(15)
+freq<-c(1.0)
+dia<-c(0.1)
+
+s1<-morph
+s2<- paste("Wo",Wo,sep="")
+
+#Creates working directory
+working<-paste("/Volumes/LaCie_New/IBAMR/",project,"/",morph,"/",morph,"_",Wo," 1/graphs",sep="")
+
 # Sets working directory
-setwd("/Volumes/LaCie_New/IBAMR/peristalsis_Wo1/base_code/graphs")
+setwd(working)
 
 # Displays the current working directory.
 getwd()
 
-s1<- "basecode"
-freq<-c(1.0)
-
-#### NOTE: In the Wo=1 set of simulations, the data analysis was turnicated so that many of the variables in this script (originally written for the Wo=10 sereis of simulations) were not analyzed because we anticipate not using them. These lines are commented out in case they will be used in the future! ####
 
 ###### AVERAGE SPEED ######
 
-base<-"upper_avg.curve"
-base1<-paste(s1, base, sep = "_")
+base1<-"Uavg_left.curve"
+base1<-paste(s1, s2, base1, sep = "_")
 #Reads in data from the ".curve" files produced by VisIt.
 data1 <- read.table(base1, header=FALSE, sep="")
 summary(data1)
 
-var1<-"Average Speed (m/s)" #Change the variable name here to automatically plot it. 
+base2<-"Uavg_right.curve"
+base2<-paste(s1, s2, base2, sep = "_")
+#Reads in data from the ".curve" files produced by VisIt.
+data2 <- read.table(base2, header=FALSE, sep="")
+summary(data2)
+
+var1<-"Non-dimensional average speed" #Change the variable name here to automatically plot it. 
 #Makes a basic line plot of the data in the VisIt curve file.
-name1<-"avg_speed_"
+name1<-"Uavg_"
 name2<-".eps"
-nameit<-paste(name1,s1,name2,sep="")
+nameit<-paste(name1,s1,s2,name2,sep="")
 setEPS()
 postscript(nameit,width=6, height=4.5)
-plot(V2~V1,data=data1,type="l",col="red",
-xlab=list("Time (s)",cex=1),ylab=list(var1,cex=1),ylim=c(min(data1$V2),max(data1$V2)))
+plot(V2/dia~V1,data=data1,type="l",col="red",
+xlab=list("Non-dimensional time",cex=1),ylab=list(var1,cex=1),ylim=c(min(data1$V2/dia),max(data1$V2/dia)))
+lines(V2/dia~V1,data=data2,type="l",col="blue")
+legend("topleft",legend=c("Left","Right"),col=c("red","blue"),lty=c(1,1))
 dev.off()
 
-###### MAX SPEED ######
 
+###### X-COMPONENT VELOCITY ######
 
-base<-"upper_max.curve"
-base1<-paste(s1, base, sep = "_")
-data21 <- read.table(base1, header=FALSE, sep="")
+base21<-"Uxavg_left.curve"
+base21<-paste(s1, s2, base21, sep = "_")
+#Reads in data from the ".curve" files produced by VisIt.
+data21 <- read.table(base21, header=FALSE, sep="")
 summary(data21)
 
-var2<-"Max Speed (m/s)" #Change the variable name here to automatically plot it. 
+base22<-"Uxavg_right.curve"
+base22<-paste(s1, s2, base22, sep = "_")
+#Reads in data from the ".curve" files produced by VisIt.
+data22 <- read.table(base22, header=FALSE, sep="")
+summary(data22)
+
+var2<-"Non-dimensional X-component velocity" #Change the variable name here to automatically plot it. 
 #Makes a basic line plot of the data in the VisIt curve file.
-
-plot(V2~V1,data=data21,type="l",col="black",
-xlab=list("Time (s)",cex=1),ylab=list(var2,cex=1),ylim=c(min(data21$V2),max(data21$V2)))
-
-num <-ceiling(10*freq)
-
-#### MAX FLUID FLOW - FIND PEAKS ####
-g2<-identify(x=data21$V1,y=data21$V2,pos=FALSE,n=num)
-
-#Uses the index numbers from the selected peaks (g2) to retrieve the time data (x) and mean data(y).
-data.x<-data21$V1[g2]
-data.y<-data21$V2[g2]
-#Plots the data again, this time plots the select points in red on top of the regular plot
-plot(V2~V1,data=data21,type="l",col="black",
-xlab=list("Time (s)",cex=1),ylab=list(var2,cex=1),ylim=c(min(data21$V2),max(data21$V2)))
-lines(data.x,data.y,type="o",lty=0,col="red",pch=21)
-
-
-
-#Makes a basic line plot of the data in the VisIt curve file.
-name1<-"max_speed_"
+name1<-"Uxavg_"
 name2<-".eps"
-nameit<-paste(name1,s1,name2,sep="")
+nameit<-paste(name1,s1,s2,name2,sep="")
 setEPS()
 postscript(nameit,width=6, height=4.5)
-plot(V2~V1,data=data21,type="l",col="red",
-xlab=list("Time (s)",cex=1),ylab=list(var2,cex=1),ylim=c(min(data21$V2),max(data21$V2)))
+plot(V2/dia~V1,data=data21,type="l",col="red",
+     xlab=list("Non-dimensional time",cex=1),ylab=list(var2,cex=1),ylim=c(min(data21$V2/dia),max(data21$V2/dia)))
+lines(V2/dia~V1,data=data22,type="l",col="blue")
+legend("topleft",legend=c("Left","Right"),col=c("red","blue"),lty=c(1,1))
 dev.off()
 
+#### Find Means #### 
+
+left_Uavg_mean<-mean(data1$V2/dia)
+right_Uavg_mean<-mean(data2$V2/dia)
+
+left_Uxavg_mean<-mean(data21$V2/dia)
+right_Uxavg_mean<-mean(data22$V2/dia)
+
+#### Report Means ####
+
+left_Uavg_mean #Non-dimensional Average Speed
+right_Uavg_mean #Non-dimensional Average Speed
+left_Uxavg_mean #Non-dimensional X-component Velocity
+right_Uxavg_mean #Non-dimensional X-component Velocity
+
+###########################################################
+###########################################################
+###########################################################
+
+# Other things not finished...
 
 ###### POINT SPEED ######
 
@@ -137,19 +163,6 @@ plot(data41$V1,diff,type="l",col="red",
 xlab=list("Time (s)",cex=1),ylab=list(var5,cex=1),ylim=c(min(diff),max(diff)))
 
 dev.off()
-
-
-#### MEAN VALUES  #####
-
-mean(data1$V2) 	# upper.avg
-mean(data21$V2)	# upper.max
-mean(data.y) 	# Mean peak speeds
-mean(data31$V2)	# point.Um
-mean(data32$V2)	# point.Ux
-mean(data41$V2)	# aorta.avgp
-mean(data42$V2)	# vc.avgp
-mean(diff)		# pressure difference
-
 
 
 
