@@ -10,9 +10,9 @@ MU = 2.0*PI*FRE*RHO*D*D/(4.0*WO*WO)     // fluid dynamic viscosity (N s / m^2) t
 //
 //
 // grid spacing parameters
-MAX_LEVELS = 5                            // maximum number of levels in locally refined grid
+MAX_LEVELS = 4                            // maximum number of levels in locally refined grid
 REF_RATIO  = 4                            // refinement ratio between levels
-N = 4                                     // actual    number of grid cells on coarsest grid level
+N = 16                                     // actual    number of grid cells on coarsest grid level
 NFINEST = (REF_RATIO^(MAX_LEVELS - 1))*N  // effective number of grid cells on finest   grid level
 DX = (1.0*L)/NFINEST                      // Cartesian mesh width (m)
 //
@@ -26,7 +26,7 @@ CONVECTIVE_OP_TYPE  = "PPM"               // convective differencing discretizat
 CONVECTIVE_FORM     = "ADVECTIVE"         // how to compute the convective terms
 NORMALIZE_PRESSURE  = TRUE                // whether to explicitly force the pressure to have mean zero
 CFL_MAX             = 0.3                 // maximum CFL number
-DT = 1.0e-5                               // timestep duration (s)
+DT = 1.0e-6                               // timestep duration (s)
 ERROR_ON_DT_CHANGE  = TRUE                // whether to emit an error message if the time step size changes
 VORTICITY_TAGGING   = TRUE                // whether to tag cells for refinement based on vorticity thresholds
 TAG_BUFFER          = 2                   // size of tag buffer used by grid generation algorithm
