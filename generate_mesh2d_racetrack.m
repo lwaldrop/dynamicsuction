@@ -1,5 +1,8 @@
+clear all
+close all
+
 L = 1;                              % length of computational domain (m)
-N = 512;                            % number of Cartesian grid meshwidths at the finest level of the AMR grid
+N = 1024;                            % number of Cartesian grid meshwidths at the finest level of the AMR grid
 dx = L/N;                           % Cartesian mesh width (m)
 ds = L/(2*N);                       % space between boundary points in straight tube
 
@@ -42,6 +45,16 @@ Ca = 0.25*Lt;                       % center of the actuator section
 NCa = ceil(ceil(Nstraight/2)*Ca/Lt); % index of the center point
 Na1 = NCa - ceil(NLa/2);            % index of the starting point with respect to the elastic section
 Na2 = Na1+NLa-1;                    % index of the ending point with respect to the elastic section
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% parameters for markers
+Nmarkersx = 11;                     %number of columns of markers
+Nmarkersy = 11;                     %number of markers in each column
+Nmarkers=Nmarkersx*Nmarkersy;       %total number of markers
+dmx = Let/(Nmarkersx-1);            %space between markers in x-direction
+dmy = diameter/(Nmarkersy-1);       %space between markers in y-direction
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -152,6 +165,27 @@ for i = Ncurve+Nstraight+ceil(Ncurve/2)+1:2*Ncurve+Nstraight,
     fprintf(vertex_fid, '%1.16e %1.16e\n', xout, yout);
 end
 fclose(vertex_fid);
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Make markers as vertices with no material properties
+
+vertex_fid = fopen(['markers_' num2str(N) '.vertex'], 'w');
+fprintf(vertex_fid, '%d\n', Nmarkers);
+
+%top part
+for i=0:Nmarkersx-1,
+    for j=0:Nmarkersy-1,
+        y = centery-R2-j*dmy;
+        x = -Let/2+i*dmx;
+    fprintf(vertex_fid, '%1.16e %1.16e\n', x, y);
+    plot(x,y)
+    end
+end
+fclose(vertex_fid);
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

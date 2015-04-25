@@ -17,7 +17,7 @@ update_target_point_positions(
 	// these parameters require modification to match the desired geometry and motion
 	
     static const double L1 = 1; // length of computational domain (meters)
-    static const int N1 = 512; // number of cartesian grid meshwidths at the finest level of the AMR grid
+    static const int N1 = 1024; // number of cartesian grid meshwidths at the finest level of the AMR grid
 	static const double diameter = 0.1;			// diameter of tube
 	static const double R2 = 0.1;				// distance from middle of domain to inner wall
 	static const double R1 = R2+diameter;		// distance from middle of domain to outer wall

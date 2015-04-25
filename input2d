@@ -10,9 +10,9 @@ MU = 2.0*PI*FRE*RHO*D*D/(4.0*WO*WO)     // fluid dynamic viscosity (N s / m^2) t
 //
 //
 // grid spacing parameters
-MAX_LEVELS = 4                            // maximum number of levels in locally refined grid
+MAX_LEVELS = 5                            // maximum number of levels in locally refined grid
 REF_RATIO  = 4                            // refinement ratio between levels
-N = 8                                     // actual    number of grid cells on coarsest grid level
+N = 4                                     // actual    number of grid cells on coarsest grid level
 NFINEST = (REF_RATIO^(MAX_LEVELS - 1))*N  // effective number of grid cells on finest   grid level
 DX = (1.0*L)/NFINEST                      // Cartesian mesh width (m)
 //
@@ -91,20 +91,20 @@ IBMethod {                //
                 //
 IBStandardInitializer {                //
    max_levels = MAX_LEVELS                //
-   structure_names = "actuator_top_512", "actuator_bot_512", "heart_tube_512", "heart_norace_512", "markers_512"             //   
-   actuator_top_512 {                //
+   structure_names = "actuator_top_1024", "actuator_bot_1024", "heart_tube_1024", "heart_norace_1024", "markers_1024"             //   
+   actuator_top_1024 {                //
       level_number = MAX_LEVELS - 1                //
    } //
-   actuator_bot_512 {                //
+   actuator_bot_1024 {                //
       level_number = MAX_LEVELS - 1                //
    } //
-   heart_tube_512 {                //
+   heart_tube_1024 {                //
       level_number = MAX_LEVELS - 1                //
    } //
-   heart_norace_512 {				//
+   heart_norace_1024 {				//
       level_number = MAX_LEVELS - 1		//
    } //
-   markers_512 {                //
+   markers_1024 {                //
       level_number = MAX_LEVELS - 1                //
    } //
 } //
