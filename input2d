@@ -10,8 +10,8 @@ MU = 2.0*PI*FRE*RHO*D*D/(4.0*WO*WO)     // fluid dynamic viscosity (N s / m^2) t
 //
 //
 // grid spacing parameters
-MAX_LEVELS = 5                            // maximum number of levels in locally refined grid
-REF_RATIO  = 2                            // refinement ratio between levels
+MAX_LEVELS = 4                            // maximum number of levels in locally refined grid
+REF_RATIO  = 4                            // refinement ratio between levels
 N = 16                                     // actual    number of grid cells on coarsest grid level
 NFINEST = (REF_RATIO^(MAX_LEVELS - 1))*N  // effective number of grid cells on finest   grid level
 DX = (1.0*L)/NFINEST                      // Cartesian mesh width (m)
@@ -63,7 +63,7 @@ GriddingAlgorithm { //
    } //
 //
    smallest_patch_size {                //
-      level_0 = 8, 8              // smallest patch allowed in hierarchy
+      level_0 = 4, 4              // smallest patch allowed in hierarchy
                                   // NOTE: all finer levels will use same values as level_0...
    }                //
 //
