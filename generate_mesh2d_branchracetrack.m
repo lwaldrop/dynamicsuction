@@ -13,18 +13,20 @@ ds = L/(2*N);                       % space between boundary points in straight 
 Let = 0.4;                          % Length of elastic tube (m)
 Nend = 10;                          % Number of rigid points on each end of elastic section
 Lt = Let+2*Nend*ds;                 % Length of straight section with three rigid points on each end
-Llong = 0.10;                        % Lenght of long end of the tube
+Llong = 0.05;                        % Lenght of long end of the tube
 
 diameter = 0.1;                     % diameter of the tube
 R2 = 0.1;                           % radius of inner wall
+theta = 0.45;
 R1 = R2+diameter;                   % radius of outer wall
+Br1dia = diameter*nthroot(0.5,3)   % radius of first branch, according to Murray's law
+x_addfactor = sqrt(-(diameter/2)^2+(Br1dia/cos(theta))^2);
 
 Nstraight = 2*ceil(Lt/ds);          % number of points along each straight section
 %Ncurve = 2*ceil(pi*R1/ds);          % number of points along each curved section
-Nrace = 12*ceil(Llong/ds);         % number of points making up the racetrack part
+nseg = 10;                             %number of segments in the racetrack
+Nrace = nseg*ceil(Llong/ds);         % number of points making up the racetrack part
 %Nrace = Nstraight+2*Ncurve;         % number of points making up the racetrack part
-theta = 0.30;
-%dtheta = pi/(Ncurve/2);             % angle increment for drawing curved edges
 
 mesh_name = 'heart_';               % structure name
 
@@ -129,21 +131,21 @@ fclose(vertex_fid);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% NO race track part
+% BRANCHED race track part
 % Write out the vertex information
 
-vertex_fid = fopen([mesh_name 'norace_' num2str(N) '.vertex'], 'w');
-fprintf(vertex_fid, '%d\n', Nrace);
+vertex_fid = fopen([mesh_name 'race_' num2str(N) '.vertex'], 'w');
+fprintf(vertex_fid, '%d\n', 2*Nrace);
 
 %right part of straight section
-for i=1:ceil(Nrace/12),
+for i=1:ceil(Nrace/nseg),
     ytop = centery-R2;
     xtop = Lt/2+i*ds;
     plot(xtop,ytop,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-for i=1:ceil(Nrace/12),
+for i=1:ceil(Nrace/nseg),
     ybot = centery-R1;
     xbot = Lt/2+i*ds;
     plot(xbot,ybot,'b-')
@@ -152,45 +154,72 @@ end
 
 %right part of branched section
 
-for i=1:ceil(Nrace/12),
+for i=1:ceil(2*(Nrace/nseg)),
     ytop = centery-R2+i*ds*sin(theta);
     xtop = Lt/2+Llong+i*ds;
-    plot(xtop,ytop,'b-')
+    plot(xtop,ytop,'y-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-for i=1:ceil(Nrace/12),
+xtop1 = xtop;
+ytop1 = ytop;
+
+for i=1:ceil(2*(Nrace/nseg)),
     ybot = centery-R1-i*ds*sin(theta);
     xbot = Lt/2+Llong+i*ds;
-    plot(xbot,ybot,'b-')
+    plot(xbot,ybot,'g-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
 
+xbot2 = xbot;
+ybot2 = ybot;
+
 %right part of inner branched section
-for i=1:ceil(Nrace/12),
+for i=1:ceil(2*(Nrace/nseg)),
     ytop = centery-R2-0.5*diameter+i*ds*sin(theta);
-    xtop = Lt/2+Llong+i*ds;
+    xtop = Lt/2+Llong+x_addfactor+i*ds;
     plot(xtop,ytop,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-for i=1:ceil(Nrace/12),
+xbot1 = xtop;
+ybot1 = ytop;
+
+for i=1:ceil(2*(Nrace/nseg)),
     ybot = centery-R2-0.5*diameter-i*ds*sin(theta);
-    xbot = Lt/2+Llong+i*ds;
+    xbot = Lt/2+Llong+x_addfactor+i*ds;
     plot(xbot,ybot,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+end
+
+xtop2 = xbot;
+ytop2 = ybot;
+
+
+plot(xtop1,ytop1,'k*')
+plot(xbot1,ybot1,'k*')
+branch1topdiameter = cos(theta)*sqrt((xtop1-xbot1)^2+(ytop1-ybot1)^2)
+plot(xtop2,ytop2,'m*')
+plot(xbot2,ybot2,'m*')
+branch1botdiameter = cos(theta)*sqrt((xtop2-xbot2)^2+(ytop2-ybot2)^2)
+
+if round(branch1topdiameter) == round(Br1dia) && round(branch1botdiameter) == round(Br1dia)
+    disp('This system branches according to Murrays law!')
+else
+    disp('WARNING!! WARNING!!')
+    disp('This system does NOT branch according to Murrays law!')
 end
 
 
 %left part of straight section
-for i=1:ceil(Nrace/12),
+for i=1:ceil(Nrace/nseg),
     ytop = centery-R2;
     xtop = -Lt/2-i*ds;
     plot(xtop,ytop,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-for i=1:ceil(Nrace/12),
+for i=1:ceil(Nrace/nseg),
     ybot = centery-R1;
     xbot = -Lt/2-i*ds;
     plot(xbot,ybot,'b-')
@@ -198,35 +227,63 @@ for i=1:ceil(Nrace/12),
 end
 
 %left part of outer branched section
-for i=1:ceil(Nrace/12),
+for i=1:ceil(2*(Nrace/nseg)),
     ytop = centery-R2+i*ds*sin(theta);
     xtop = -Lt/2-Llong-i*ds;
     plot(xtop,ytop,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-for i=1:ceil(Nrace/12),
+
+xtop1 = xtop;
+ytop1 = ytop;
+
+for i=1:ceil(2*(Nrace/nseg)),
     ybot = centery-R1-i*ds*sin(theta);
     xbot = -Lt/2-Llong-i*ds;
     plot(xbot,ybot,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
 
+xbot2 = xbot;
+ybot2 = ybot;
+
+
 %left part of inner branched section
-for i=1:ceil(Nrace/12),
+for i=1:ceil(2*(Nrace/nseg)),
     ytop = centery-R2-0.5*diameter+i*ds*sin(theta);
-    xtop = -Lt/2-Llong-i*ds;
+    xtop = -Lt/2-Llong-x_addfactor-i*ds;
     plot(xtop,ytop,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-for i=1:ceil(Nrace/12),
+xbot1 = xtop;
+ybot1 = ytop;
+
+for i=1:ceil(2*(Nrace/nseg)),
     ybot = centery-R2-0.5*diameter-i*ds*sin(theta);
-    xbot = -Lt/2-Llong-i*ds;
+    xbot = -Lt/2-Llong-x_addfactor-i*ds;
     plot(xbot,ybot,'b-')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
 
+
+xtop2 = xbot;
+ytop2 = ybot;
+
+plot(xtop1,ytop1,'k*')
+plot(xbot1,ybot1,'k*')
+branch1topdiameter = cos(theta)*sqrt((xtop1-xbot1)^2+(ytop1-ybot1)^2)
+plot(xtop2,ytop2,'m*')
+plot(xbot2,ybot2,'m*')
+branch1botdiameter = cos(theta)*sqrt((xtop2-xbot2)^2+(ytop2-ybot2)^2)
+
+if round(branch1topdiameter) == round(Br1dia) && round(branch1botdiameter) == round(Br1dia)
+    disp('This system branches according to Murrays law!')
+else
+    disp('WARNING!! WARNING!!')
+    disp('This system does NOT branch according to Murrays law!')
+end
 
 
 fclose(vertex_fid);
@@ -389,9 +446,9 @@ fclose(target_fid);
 % Write out the target point information for the racetrack
 target_fid = fopen([mesh_name 'norace_' num2str(N) '.target'], 'w');
 
-fprintf(target_fid, '%d\n', Nrace);
+fprintf(target_fid, '%d\n', 2*Nrace);
 
-for i = 0:Nrace-1,
+for i = 0:2*Nrace-1,
     fprintf(target_fid, '%d %1.16e\n', i, kappa_target*ds/(ds^2));
 end
 
