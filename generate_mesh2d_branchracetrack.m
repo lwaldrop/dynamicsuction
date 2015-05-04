@@ -444,7 +444,7 @@ fclose(target_fid);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Write out the target point information for the racetrack
-target_fid = fopen([mesh_name 'norace_' num2str(N) '.target'], 'w');
+target_fid = fopen([mesh_name 'race_' num2str(N) '.target'], 'w');
 
 fprintf(target_fid, '%d\n', 2*Nrace);
 
