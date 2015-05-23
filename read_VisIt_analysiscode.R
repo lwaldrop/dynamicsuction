@@ -8,7 +8,7 @@ morph<- "branched"
 Wo<-c(15)
 freq<-c(1.0)
 dia<-c(0.1)
-
+#Conflicting comment!
 s1<-morph
 s2<- paste("Wo",Wo,sep="")
 
