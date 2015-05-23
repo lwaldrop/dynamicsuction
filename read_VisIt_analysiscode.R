@@ -5,7 +5,6 @@ rm(list=ls())
 project<-c("dynamic_suction")
 morph<- "branched"
 
-#comment
 Wo<-c(15)
 freq<-c(1.0)
 dia<-c(0.1)
@@ -16,6 +15,7 @@ s2<- paste("Wo",Wo,sep="")
 #Creates working directory
 working<-paste("/Volumes/LaCie_New/IBAMR/",project,"/",morph,"/",morph,"_",Wo," 1/graphs",sep="")
 
+#Comment how does it work? no one knows
 # Sets working directory
 setwd(working)
 
