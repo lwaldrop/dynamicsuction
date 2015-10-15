@@ -5,7 +5,7 @@ L = 1;                              % length of computational domain (m)
 N = 1024;                            % number of Cartesian grid meshwidths at the finest level of the AMR grid
 dx = L/N;                           % Cartesian mesh width (m)
 ds = L/(2*N);                       % space between boundary points in straight tube
-
+amp = 0.05;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Parameters for the racetrack
@@ -82,7 +82,8 @@ fprintf(vertex_fid, '%d\n', Nstraight);
 
 %top part
 for i=1:ceil(Nstraight/2),
-    ytop = centery-R2;
+    ytop = centery-R2+amp*sin(i*pi/(Nstraight/2)); %For Free vibration.
+%    ytop = centery-R2;
     xtop = -Lt/2+(i-1)*ds;
     plot(xtop,ytop,'r-+')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
@@ -90,7 +91,8 @@ end
 
 %bottom part
 for i=ceil(Nstraight/2)+1:Nstraight,
-    ybot = centery-R1;
+    ybot = centery-R1-amp*sin(i*pi/(Nstraight/2)); %For Free vibration.
+%    ybot = centery-R1;
     xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
     plot(xbot,ybot,'r-+')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
