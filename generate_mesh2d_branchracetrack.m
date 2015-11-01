@@ -63,7 +63,7 @@ dmy = diameter/(Nmarkersy-1);       %space between markers in y-direction
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % material parameters
-kappa_spring = 2.0e0;               % spring constant (Newton)
+kappa_spring = 6.0e0;               % spring constant (Newton)
 kappa_beam = 5.0e-1;                 % beam stiffness constant (Newton m^2)
 kappa_target = kappa_spring;        % target point penalty spring constant (Newton)
 
@@ -84,7 +84,7 @@ vertex_fid = fopen([mesh_name 'tube_' num2str(N) '.vertex'], 'w');
 fprintf(vertex_fid, '%d\n', Nstraight);
 
 %top part
-for i=1:ceil(Nstraight/2),
+for i=0:ceil(Nstraight/2)-1,
     ytop = centery-R2+amp*sin(i*pi/(Nstraight/2)); %For Free vibration.
 %    ytop = centery-R2;                             % For regular sims.
     xtop = -Lt/2+(i-1)*ds;
@@ -94,7 +94,7 @@ for i=1:ceil(Nstraight/2),
 end
 
 %bottom part
-for i=ceil(Nstraight/2)+1:Nstraight,
+for i=ceil(Nstraight/2):Nstraight-1,
     ybot = centery-R1-amp*sin(i*pi/(Nstraight/2)); %For Free vibration.
 %    ybot = centery-R1;                 % For regular sims.
     xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
