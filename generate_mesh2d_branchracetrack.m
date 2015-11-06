@@ -77,31 +77,91 @@ hold on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Make the elastic section of the tube
+% Make the elastic section of the tube FREE VIBRATIONS
 % Write out the vertex information - For free vibration testing.
 
 vertex_fid = fopen([mesh_name 'tube_' num2str(N) '.vertex'], 'w');
 fprintf(vertex_fid, '%d\n', Nstraight);
 
-%top part
-for i=0:ceil(Nstraight/2)-1,
-    ytop = centery-R2+amp*sin(i*pi/(Nstraight/2)); %For Free vibration.
-%    ytop = centery-R2;                             % For regular sims.
+
+%top part - end points section 1
+for i=1:Nend,
+    ytop = centery-R2;      
     xtop = -Lt/2+(i-1)*ds;
     plot(xtop,ytop,'r-+')
     axis([-0.5 0.5 -0.5 0.5])
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-%bottom part
-for i=ceil(Nstraight/2):Nstraight-1,
-    ybot = centery-R1-amp*sin(i*pi/(Nstraight/2)); %For Free vibration.
-%    ybot = centery-R1;                 % For regular sims.
+%top part - "straight" section
+for i=(Nend+1):ceil(Nstraight/2)-Nend,
+    ytop = centery-R2+amp*sin((i-(Nend))*pi/(Nstraight/2-2*Nend)); 
+    xtop = -Lt/2+(i-1)*ds;
+    plot(xtop,ytop,'r-+')
+    axis([-0.5 0.5 -0.5 0.5])
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+end
+
+%top part - end points section 2
+for i=ceil(Nstraight/2)-Nend+1:ceil(Nstraight/2),
+    ytop = centery-R2;        
+    xtop = -Lt/2+(i-1)*ds;
+    plot(xtop,ytop,'r-+')
+    axis([-0.5 0.5 -0.5 0.5])
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+end
+
+%bottom part - end points section 1
+for i=ceil(Nstraight/2)+1:ceil(Nstraight/2)+1+Nend,
+    ybot = centery-R1;               
     xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
     plot(xbot,ybot,'r-+')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
+
+%bottom part - "straight" section
+for i=ceil(Nstraight/2)+2+Nend:Nstraight-Nend,
+    ybot = centery-R1+amp*sin((i-(Nend+ceil(Nstraight/2)))*pi/(Nstraight/2-2*Nend)); 
+    xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
+    plot(xbot,ybot,'r-+')
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+end
+
+%bottom part - end points section 2
+for i=Nstraight-Nend:Nstraight,
+    ybot = centery-R1;             
+    xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
+    plot(xbot,ybot,'r-+')
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+end
+
 fclose(vertex_fid);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Make the elastic section of the tube REGULAR RUNS
+% Write out the vertex information - For free vibration testing.
+% 
+% vertex_fid = fopen([mesh_name 'tube_' num2str(N) '.vertex'], 'w');
+% fprintf(vertex_fid, '%d\n', Nstraight);
+% 
+% %top part
+% for i=0:ceil(Nstraight/2)-1,
+%     ytop = centery-R2;                             
+%     xtop = -Lt/2+(i-1)*ds;
+%     plot(xtop,ytop,'r-+')
+%     axis([-0.5 0.5 -0.5 0.5])
+%     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+% end
+% 
+% %bottom part
+% for i=ceil(Nstraight/2):Nstraight-1,
+%     ybot = centery-R1;               
+%     xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
+%     plot(xbot,ybot,'r-+')
+%     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+% end
+% fclose(vertex_fid);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
