@@ -63,32 +63,93 @@ kappa_spring = 2.0e0;               % spring constant (Newton)
 kappa_beam = 5.0e-1;                 % beam stiffness constant (Newton m^2)
 kappa_target = kappa_spring;        % target point penalty spring constant (Newton)
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Make the elastic section of the tube
-% Write out the vertex information
+% Make the elastic section of the tube FREE VIBRATIONS
+% Write out the vertex information - For free vibration testing.
+
 
 vertex_fid = fopen([mesh_name 'tube_' num2str(N) '.vertex'], 'w');
 fprintf(vertex_fid, '%d\n', Nstraight);
 
-%top part
-for i=1:ceil(Nstraight/2),
-    ytop = centery-R2+amp*sin(i*pi/(Nstraight/2)); %For Free vibration.
-%    ytop = centery-R2;
+
+%top part - end points section 1
+for i=1:Nend,
+    ytop = centery-R2;      
     xtop = -Lt/2+(i-1)*ds;
+    plot(xtop,ytop,'r-+')
+    hold on
+    axis([-0.5 0.5 -0.5 0.5])
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 
-%bottom part
-for i=ceil(Nstraight/2)+1:Nstraight,
-    ybot = centery-R1-amp*sin(i*pi/(Nstraight/2)); %For Free vibration.
-%    ybot = centery-R1;
+%top part - "straight" section
+for i=(Nend+1):ceil(Nstraight/2)-Nend,
+    ytop = centery-R2+amp*sin((i-(Nend))*pi/(Nstraight/2-2*Nend)); 
+    xtop = -Lt/2+(i-1)*ds;
+    plot(xtop,ytop,'r-+')
+    axis([-0.5 0.5 -0.5 0.5])
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+end
+
+%top part - end points section 2
+for i=ceil(Nstraight/2)-Nend+1:ceil(Nstraight/2),
+    ytop = centery-R2;        
+    xtop = -Lt/2+(i-1)*ds;
+    plot(xtop,ytop,'r-+')
+    axis([-0.5 0.5 -0.5 0.5])
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+end
+
+%bottom part - end points section 1
+for i=ceil(Nstraight/2)+1:ceil(Nstraight/2)+1+Nend,
+    ybot = centery-R1;               
     xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
+    plot(xbot,ybot,'r-+')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
+
+%bottom part - "straight" section
+for i=ceil(Nstraight/2)+2+Nend:Nstraight-Nend,
+    ybot = centery-R1+amp*sin((i-(Nend+ceil(Nstraight/2)))*pi/(Nstraight/2-2*Nend)); 
+    xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
+    plot(xbot,ybot,'r-+')
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+end
+
+%bottom part - end points section 2
+for i=Nstraight-Nend:Nstraight,
+    ybot = centery-R1;             
+    xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
+    plot(xbot,ybot,'r-+')
+    fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+end
+
 fclose(vertex_fid);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Make the elastic section of the tube FOR REGULAR SIMULATIONS
+% Write out the vertex information
+%
+% vertex_fid = fopen([mesh_name 'tube_' num2str(N) '.vertex'], 'w');
+% fprintf(vertex_fid, '%d\n', Nstraight);
+% 
+% %top part
+% for i=1:ceil(Nstraight/2),
+%     ytop = centery-R2;
+%     xtop = -Lt/2+(i-1)*ds;
+%     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
+% end
+% 
+% %bottom part
+% for i=ceil(Nstraight/2)+1:Nstraight,
+%     ybot = centery-R1;
+%     xbot = -Lt/2+(i-ceil(Nstraight/2)-1)*ds;
+%     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
+% end
+% fclose(vertex_fid);
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % actuator part
@@ -101,6 +162,7 @@ fprintf(vertex_fid, '%d\n', NLa);
 for i=Na1:Na2,
     ytop = centery-R2;
     xtop = -Lt/2+i*ds;
+    plot(xtop,ytop,'k+')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xtop, ytop);
 end
 fclose(vertex_fid);
@@ -112,6 +174,7 @@ fprintf(vertex_fid, '%d\n', NLa);
 for i=Na1:Na2,
     ybot = centery-R1;
     xbot = -Lt/2+i*ds;
+    plot(xbot,ybot,'k+')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xbot, ybot);
 end
 fclose(vertex_fid);
@@ -129,6 +192,7 @@ for i=1:ceil(Ncurve/2),
     theta = (i-1)*dtheta-pi/2;
     yin = centery+R2*sin(theta);
     xin = Lt/2+R2*cos(theta);
+    plot(xin,yin,'b.')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xin, yin);
 end
 
@@ -136,6 +200,7 @@ for i=ceil(Ncurve/2)+1:Ncurve,
     theta=(i-Ncurve/2-1)*dtheta-pi/2;
     yout = centery+R1*sin(theta);
     xout = Lt/2+R1*cos(theta);
+    plot(xout,yout,'b.')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xout, yout);
 end
 
@@ -143,12 +208,14 @@ end
 for i = Ncurve+1:Ncurve+ceil(Nstraight/2),
     yin = centery+R2;
     xin = centerx2-(i-Ncurve-1)*ds;
+    plot(xin,yin,'b.')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xin, yin);
 end
 
 for i = Ncurve+ceil(Nstraight/2)+1:Ncurve+Nstraight,
     yout = centery+R1;
     xout = centerx2-(i-Ncurve-ceil(Nstraight/2)-1)*ds;
+    plot(xout,yout,'b.')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xout, yout);
 end
 
@@ -157,6 +224,7 @@ for i = Ncurve+Nstraight+1:Ncurve+Nstraight+ceil(Ncurve/2),
     theta = pi/2+(i-Ncurve-Nstraight-1)*dtheta;
     yin = centery+R2*sin(theta);
     xin = centerx1+R2*cos(theta);
+    plot(xin,yin,'b.')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xin, yin);
 end
 
@@ -164,6 +232,7 @@ for i = Ncurve+Nstraight+ceil(Ncurve/2)+1:2*Ncurve+Nstraight,
     theta = pi/2+(i-Ncurve-Nstraight-ceil(Ncurve/2)-1)*dtheta;
     yout = centery+R1*sin(theta);
     xout = centerx1+R1*cos(theta);
+    plot(xout,yout,'b.')
     fprintf(vertex_fid, '%1.16e %1.16e\n', xout, yout);
 end
 fclose(vertex_fid);
