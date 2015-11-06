@@ -192,10 +192,10 @@ fclose(vertex_fid);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% NO race track part
+% Race track part
 % Write out the vertex information
 
-vertex_fid = fopen([mesh_name 'norace_' num2str(N) '.vertex'], 'w');
+vertex_fid = fopen([mesh_name 'race_' num2str(N) '.vertex'], 'w');
 fprintf(vertex_fid, '%d\n', Nrace);
 
 %right curved part of NO racetrack
